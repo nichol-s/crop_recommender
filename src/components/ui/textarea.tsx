@@ -1,0 +1,54 @@
+
+import * as React from "react"
+import { cn } from "@/lib/utils"
+
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  showCount?: boolean;
+  maxCount?: number;
+}
+
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, showCount, maxCount, onChange, value, ...props }, ref) => {
+    const [charCount, setCharCount] = React.useState(
+      typeof value === "string" ? value.length : 0
+    );
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setCharCount(e.target.value.length);
+      if (onChange) {
+        onChange(e);
+      }
+    };
+
+    React.useEffect(() => {
+      setCharCount(typeof value === "string" ? value.length : 0);
+    }, [value]);
+
+    return (
+      <div className="relative">
+        <textarea
+          className={cn(
+            "flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            className
+          )}
+          ref={ref}
+          onChange={handleChange}
+          value={value}
+          {...props}
+        />
+        {showCount && (
+          <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
+            {charCount}
+            {maxCount && (
+              <span>/{maxCount}</span>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+Textarea.displayName = "Textarea"
+
+export { Textarea }
